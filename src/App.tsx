@@ -1,17 +1,31 @@
+import { useReducer } from "react";
 
 type State = {
-  city: string;
+  city : string;
+  loading : boolean;
   weather : any;
-  loading: boolean;
   error: string | null;
 }
+type initialState = {
+  city: "";
+  loading: true;
+  weather: any;
+  error: null;
+}
+type Action =
+  | { type: "SET_CITY", payload: string }
+  | { type: "FETCH_START" }
+  | { type: "FETCH_SUCCESS"; payload: any }
+  | { type: "FETCH_ERROR"; payload: string }
 
+function reducer (state: State, action: Action) : State{
+  return State;
+}
 function App(){
+  const [state, dispatch] = useReducer(reducer, initialState);
   return (
     <>
-      <span>날ㅆㅣ앱</span>
+      <input />
     </>
   );
 }
-
-export default App;
