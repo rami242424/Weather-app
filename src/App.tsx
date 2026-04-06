@@ -6,11 +6,11 @@ type State = {
   weather : any;
   error: string | null;
 }
-type initialState = {
-  city: "";
-  loading: true;
-  weather: any;
-  error: null;
+const initialState : State = {
+  city: "",
+  loading: false,
+  weather: null,
+  error: null
 }
 type Action =
   | { type: "SET_CITY", payload: string }
@@ -19,7 +19,10 @@ type Action =
   | { type: "FETCH_ERROR"; payload: string }
 
 function reducer (state: State, action: Action) : State{
-  return State;
+  switch(action.type){
+    default :
+    return state;
+  }
 }
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -29,3 +32,5 @@ function App(){
     </>
   );
 }
+
+export default App;
