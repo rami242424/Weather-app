@@ -2,17 +2,21 @@
 // loading
 // success -> weather data
 // fail -> error msg
-import { useState } from "react";
+import { lazy, useState } from "react";
 
+type Weather = {
+  name : string;
+  temp : number;
+}
 type Props = {
   loading: boolean;
   error: boolean;
-  weather : string[] | null;
+  weather : Weather[];
 }
 function WeatherContent({loading, error, weather}:Props){
   if(loading) return <div>Loading...</div>;
   if(error) return <div>Error</div>;
-  if(weather) return <div>{weather}</div>;
+  if(weather) return <div>{weather.name}</div>;
   return null;
 }
 
@@ -20,7 +24,7 @@ function App(){
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [weather, setWeather] = useState<string[] | null>(null);
+  const [weather, setWeather] = useState<Weather[]>([]);
   
   const inputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value);
@@ -29,17 +33,19 @@ function App(){
     // 기본설정
     setLoading(true);
     setError(false);
-    setWeather(null);
+    setWeather([]);
 
     // api요청
     try {
-      const response = await fetch(`api주소`);
+      const response = await fetch(`api주소.{city}`);
       const json = await response.json();
       setWeather(json);
 
     } catch(error) {
-      //
-
+      setError(true)
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -52,6 +58,13 @@ function App(){
         error={error}
         weather={weather}
       />
+      {weather?.map((weather) => 
+        <li>
+          {city}
+          {weather.name}
+          {weather.temp}
+        </li>
+      )}
       
     </>
   )
