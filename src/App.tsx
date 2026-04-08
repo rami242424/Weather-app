@@ -38,7 +38,7 @@ function App(){
     // 기본설정
     setLoading(true);
     setError(false);
-    setWeather([]);
+    setWeather(null);
 
     // api요청
     try {
@@ -46,7 +46,7 @@ function App(){
       const json = await response.json();
       setWeather({
         name: json.name,
-        temp: json.temp,
+        temp: json.main.temp,
       });
 
     } catch(error) {
