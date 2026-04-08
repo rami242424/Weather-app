@@ -4,6 +4,18 @@
 // fail -> error msg
 import { useState } from "react";
 
+type Props = {
+  loading: boolean;
+  error: boolean;
+  weather : string[] | null;
+}
+function WeatherContent({loading, error, weather}:Props){
+  if(loading) return <div>Loading...</div>;
+  if(error) return <div>Error</div>;
+  if(weather) return <div>{weather}</div>;
+  return null;
+}
+
 function App(){
   const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,9 +47,12 @@ function App(){
     <>
       <input value={city} onChange={inputChange} placeholder="도시의 이름을 입력하세요."/>
       <button onClick={searchBtn}>Search</button>
-      {loading ? "...Loading" 
-        : {weather ? {weather} : {error}}
-      }
+      <WeatherContent
+        loading={loading}
+        error={error}
+        weather={weather}
+      />
+      
     </>
   )
 }
