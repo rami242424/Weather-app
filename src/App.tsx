@@ -9,15 +9,13 @@ type Props = {
   error: boolean;
   weather : Weather | null;
 }
-function WeatherContent({loading, error, weather}:Props){
-  if(loading) return <div>Loading...</div>;
-  if(error) return <div>Error</div>;
-  if(weather) return (
-    <div>
-      <span>도시 : {weather.name}</span>
-      <span>온도 : {weather.temp}</span>
-    </div>
-  );
+function WeatherContent({loading,error,weather}:Props){
+  if(loading) return <div>Loading...</div>
+  if(error) return <div>Error!!</div>
+  if(weather) return <>
+    <h2>도시 이름 : {weather.name}</h2>
+    <h2>온도 : {weather.temp}º</h2>
+  </>
   return null;
 }
 
@@ -33,6 +31,7 @@ function App(){
   const searchBtn = async() => {
     setLoading(true);
     setError(false);
+    setWeather(null);
 
     const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
 
