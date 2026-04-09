@@ -4,6 +4,7 @@
 // fail -> error msg
 import { useState } from "react";
 
+
 type Weather = {
   name : string;
   temp : number;
@@ -42,8 +43,14 @@ function App(){
 
     // api요청
     try {
-      const response = await fetch(`api주소?city=${city}`);
+      const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
+
+      if(!response.ok) throw new Error("API 요청실패");
+      
       const json = await response.json();
+      console.log(json, "잘오고있니");
+      
       setWeather({
         name: json.name,
         temp: json.main.temp,
