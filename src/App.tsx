@@ -1,9 +1,4 @@
-// typing -> 입력완료하면 state에 저장해야함
-// loading
-// success -> weather data
-// fail -> error msg
 import { useState } from "react";
-
 
 type Weather = {
   name : string;
@@ -36,34 +31,26 @@ function App(){
     setCity(e.target.value);
   }
   const searchBtn = async() => {
-    // 기본설정
     setLoading(true);
     setError(false);
-    setWeather(null);
 
-    // api요청
-    try {
-      const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+    const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+
+    try{
       const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`);
-
-      if(!response.ok) throw new Error("API 요청실패");
-      
+      if(!response.ok) throw new Error();
       const json = await response.json();
-      console.log(json, "잘오고있니");
-      
       setWeather({
         name: json.name,
-        temp: json.main.temp,
+        temp: json.main.temp
       });
-
-    } catch(error) {
-      setError(true)
-      console.log(error);
+    } catch (error) {
+      setError(true);
+      console.log(error, "에러발생");
     } finally {
       setLoading(false);
     }
   }
-
   return (
     <>
       <input value={city} onChange={inputChange} placeholder="도시의 이름을 입력하세요."/>
