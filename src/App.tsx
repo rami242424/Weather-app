@@ -15,6 +15,7 @@ function App(){
     setCity(e.target.value);
   }
   const searchBtn = async() => {
+    if(!city.trim()) return;
     setLoading(true);
     setError(null);
     setWeather(null);
@@ -38,6 +39,13 @@ function App(){
     <>
       <input value={city} onChange={inputChange} placeholder="도시이름을 입력하세요."/>
       <button onClick={searchBtn}>Search</button>
+      {loading && <div>Loading...</div>}
+      {error && <div>{error}</div>}
+      {weather && <div>
+          <h3>도시이름 : {weather.name}</h3>
+          <h3>온도 : {weather.temp}°C</h3>
+        </div>
+      }
     </>
   );
 }
