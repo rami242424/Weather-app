@@ -36,17 +36,9 @@ function App(){
         temp: json.main.temp,
       })
     } catch(error) {
-      // console.log(error, "3")
-      // if(error instanceof Error){
-      //   console.log(error.message, "4");
-      //   setError(error.message);
-      // } else {
-      //   console.log("5", error);
-      //   setError("6")
-      // }
-      console.log("전체:", error);
+      //console.log("전체:", error);
       if (error instanceof Error) {
-        console.log("메시지:", error.message);
+        //console.log("메시지:", error.message);
         setError(error.message);
       }
     } finally {
