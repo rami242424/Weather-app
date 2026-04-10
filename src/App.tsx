@@ -23,14 +23,32 @@ function App(){
     const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
     try {
       const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city.trim()}&appid=${API_KEY}&units=metric`);
-      if(!response.ok) throw new Error();
+      if(!response.ok){
+        if(response.status === 404){
+          throw new Error("1");
+        } else {
+          throw new Error("2");
+        }
+      }
       const json = await response.json();
       setWeather({
         name: json.name,
         temp: json.main.temp,
       })
-    } catch(error:any) {
-      setError(error.message);
+    } catch(error) {
+      // console.log(error, "3")
+      // if(error instanceof Error){
+      //   console.log(error.message, "4");
+      //   setError(error.message);
+      // } else {
+      //   console.log("5", error);
+      //   setError("6")
+      // }
+      console.log("전체:", error);
+      if (error instanceof Error) {
+        console.log("메시지:", error.message);
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -43,7 +61,7 @@ function App(){
       {error && <div>{error}</div>}
       {weather && <div>
           <h3>도시이름 : {weather.name}</h3>
-          <h3>온도 : {weather.temp}°C</h3>
+          <h3>온도 : {Math.ceil(weather.temp)}°C</h3>
         </div>
       }
     </>
