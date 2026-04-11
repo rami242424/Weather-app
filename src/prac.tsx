@@ -46,13 +46,15 @@ const reducer = (state:State, action:Action):State => {
           ...state,
           loading: false,
           error: null,
-          weather: action.payload
+          //weather: action.payload
+          weather: state.weather
         }
         case "FETCH_FAIL":
           return {
             ...state,
             loading: false,
-            error: action.payload,
+            //error: action.payload,
+            error: state.error,
             weather: null
           }
     default:
