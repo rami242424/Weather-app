@@ -5,7 +5,6 @@ type Weather = {
   temp: number;
 }
 
-
 type State = {
   loading : boolean,
   error: string | null,
@@ -29,11 +28,6 @@ const initialState:State = {
 
 const reducer = (state:State, action:Action):State => {
   switch(action.type){
-    case "INPUT_CHANGE":
-      return {
-        ...state,
-        city: action.payload
-      }
     case "START_SEARCH":
       return {
         ...state,

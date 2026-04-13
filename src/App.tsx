@@ -14,9 +14,9 @@ type State = {
 
 type Action =
   | { type: "INPUT_CHANGE", payload: string }
-  | { type: "START_SEARCH" }
-  | { type: "FETCH_SUCCESS", payload: Weather}
-  | { type: "FETCH_FAIL", payload: string}
+  | { type: "SEARCH_START" }
+  | { type: "SEARCH_SUCCESS", payload: Weather}
+  | { type: "SEARCH_FAIL", payload: string}
 
 const initialState = {
   city: "",
@@ -30,22 +30,23 @@ function reducer(state:State, action:Action):State{
     case "INPUT_CHANGE":
       return {
         ...state,
+        city: action.payload
       }
-    case "START_SEARCH":
+    case "SEARCH_START":
       return {
         ...state,
         loading: true,
         error: null,
         weather: null
       }
-    case "FETCH_SUCCESS":
+    case "SEARCH_SUCCESS":
       return {
         ...state,
         loading: false,
         error: null,
         weather: action.payload
       }
-    case "FETCH_FAIL":
+    case "SEARCH_FAIL":
       return {
         ...state,
         loading: false,
@@ -60,15 +61,50 @@ function reducer(state:State, action:Action):State{
 
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
+  const searchBtn = async() => {
+    if(!state.city.trim()) return;
+
+    // 초기화
+    dispatch({ type: "SEARCH_START" });
+
+    const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+
+    try{
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${state.city.trim()}&appid=${API_KEY}&units=metric`);
+      if(!response.ok){
+        if(response.status === 404){
+          throw new Error ("도시이름을 찾을 수 없습니다.");
+        } else {
+          throw new Error ("서버에 에러가 발생했습니다.");
+        }
+      }
+      const json = await response.json();
+
+      dispatch({
+        type:"SEARCH_SUCCESS", 
+        payload: {
+          name: json.name,
+          temp: json.main.temp
+      }});
+    } catch(error) {
+      if(error instanceof Error){
+        dispatch({
+          type: "SEARCH_FAIL",
+          payload: error.message
+        });
+      }
+    }
+  }
   return (
     <>
       <input 
         value={state.city} 
         onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value })}
+        placeholder="도시명을 입력하세요."
       />
-      <button onClick={() => dispatch({ type: "START_SEARCH" })}>Search</button>
+      <button onClick={searchBtn}>Search</button>
       {state.loading && <div>Loading...</div>}
-      {state.error && <div>Error:{state.error}</div>}
+      {state.error && <div>{state.error}</div>}
       {state.weather && <div>
           <h3>도시이름 : {state.weather.name}</h3>
           <h3>온도 : {Math.ceil(state.weather.temp)}°C</h3>
