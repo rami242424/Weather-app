@@ -103,17 +103,20 @@ function App(){
   };
 //   1. 버튼 추가 0
 // 2. 함수 만들기 0
-// 3. geolocation 붙이기
-// 4. lat/lon 콘솔 찍기
+// 3. geolocation 붙이기0
+// 4. lat/lon 콘솔 찍기0
 // 5. API 연결
 // 6. dispatch 연결
   const getLoationWeather = async() => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         // 성공
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
       },
       (error) => {
         // 실패
+        console.log(error);
       }
     );
   }
