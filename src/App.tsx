@@ -25,6 +25,8 @@ const initialState = {
   weather: null,
 }
 
+const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+
 function reducer(state:State, action:Action):State{
   switch(action.type){
     case "INPUT_CHANGE":
@@ -73,8 +75,6 @@ function App(){
     // 초기화
     dispatch({ type: "SEARCH_START" });
 
-    const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
-
     try{
       const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${state.city.trim()}&appid=${API_KEY}&units=metric`);
       if(!response.ok){
@@ -101,22 +101,44 @@ function App(){
       }
     }
   };
-//   1. 버튼 추가 0
-// 2. 함수 만들기 0
-// 3. geolocation 붙이기0
-// 4. lat/lon 콘솔 찍기0
-// 5. API 연결
-// 6. dispatch 연결
-  const getLoationWeather = async() => {
+  const getLocationWeather = () => {
+    dispatch({
+      type: "SEARCH_START"
+    });
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async(position) => {
         // 성공
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
+
+        try {
+          const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+          if(!response.ok) throw new Error("위치 기반 날씨 조회 실패");
+          const json = await response.json();
+          
+          dispatch({
+            type: "SEARCH_SUCCESS",
+            payload: {
+              name: json.name,
+              temp: json.main.temp
+            }
+          })
+        } catch (error) {
+          if( error instanceof Error){
+            dispatch({ 
+              type: "SEARCH_FAIL",
+              payload: error.message
+            });
+          }
+        }
       },
+
+
       (error) => {
-        // 실패
-        console.log(error);
+        dispatch({
+          type: "SEARCH_FAIL",
+          payload: error.message
+        })
       }
     );
   }
@@ -128,7 +150,7 @@ function App(){
         placeholder="도시명을 입력하세요."
       />
       <button onClick={getWeather} disabled={state.loading}>Search</button>
-      <button onClick={getLoationWeather}>Current Location</button>
+      <button onClick={getLocationWeather} disabled={state.loading}>Current Location</button>
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
