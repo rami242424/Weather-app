@@ -13,7 +13,7 @@ type Weather = {
 };
 
 const initialState = {
-  loading: true,
+  loading: false,
   error: null,
   weather: null,
   city: "",
@@ -97,7 +97,41 @@ function App(){
     }
   }
   const getCurrentLocation = () => {
+    dispatch({ type: "SEARCH_START" });
 
+    navigator.geolocation.getCurrentPosition(
+      async(position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        try {
+          const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+          if(!response.ok) throw new Error ("위치 기반 날씨 조회 실패");
+          const json = await response.json();
+
+          dispatch({
+            type: "SEARCH_SUCCESS",
+            payload: {
+              name: json.name,
+              temp: json.main.temp,
+            }
+          });
+        } catch(error){
+          if(error instanceof Error){
+            dispatch({
+              type: "SEARCH_FAIL",
+              payload: error.message
+            });
+          }
+        }
+      },
+      (error) => {
+        dispatch({
+              type: "SEARCH_FAIL",
+              payload: error.message
+        });
+      }
+    );
   }
   return (
     <>
@@ -106,8 +140,8 @@ function App(){
       placeholder="도시이름을 입력해주세요." 
       onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value})}
     />
-    <button onClick={getWeather}>Search</button>
-    <button onClick={getCurrentLocation}>My Current Location</button>
+    <button onClick={getWeather} disabled={state.loading}>Search</button>
+    <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
     {state.loading && <div>Loading...</div>}
     {state.error && <div>{state.error}</div>}
     {state.weather&& <div>
