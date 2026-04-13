@@ -61,7 +61,7 @@ function reducer(state:State, action:Action):State{
 
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
-  const searchBtn = async() => {
+  const getWeather = async() => {
     if(!state.city.trim()){
       dispatch({
         type: "SEARCH_FAIL",
@@ -101,6 +101,22 @@ function App(){
       }
     }
   };
+//   1. 버튼 추가 0
+// 2. 함수 만들기 0
+// 3. geolocation 붙이기
+// 4. lat/lon 콘솔 찍기
+// 5. API 연결
+// 6. dispatch 연결
+  const getLoationWeather = async() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // 성공
+      },
+      (error) => {
+        // 실패
+      }
+    );
+  }
   return (
     <>
       <input 
@@ -108,7 +124,8 @@ function App(){
         onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value })}
         placeholder="도시명을 입력하세요."
       />
-      <button onClick={searchBtn} disabled={state.loading}>Search</button>
+      <button onClick={getWeather} disabled={state.loading}>Search</button>
+      <button onClick={getLoationWeather}>Current Location</button>
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
