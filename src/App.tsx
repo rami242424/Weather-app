@@ -62,7 +62,13 @@ function reducer(state:State, action:Action):State{
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
   const searchBtn = async() => {
-    if(!state.city.trim()) return;
+    if(!state.city.trim()){
+      dispatch({
+        type: "SEARCH_FAIL",
+        payload: "도시명을 입력하세요."
+      });
+      return;
+    }
 
     // 초기화
     dispatch({ type: "SEARCH_START" });
@@ -94,7 +100,7 @@ function App(){
         });
       }
     }
-  }
+  };
   return (
     <>
       <input 
@@ -102,14 +108,15 @@ function App(){
         onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value })}
         placeholder="도시명을 입력하세요."
       />
-      <button onClick={searchBtn}>Search</button>
+      <button onClick={searchBtn} disabled={state.loading}>Search</button>
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
-      {state.weather && <div>
+      {state.weather && (
+        <div>
           <h3>도시이름 : {state.weather.name}</h3>
           <h3>온도 : {Math.ceil(state.weather.temp)}°C</h3>
         </div>
-      }
+      )}
     </>
   );
 }
