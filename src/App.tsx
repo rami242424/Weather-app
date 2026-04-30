@@ -5,11 +5,17 @@ type State = {
   error : string | null;
   weather : Weather | null;
   city : string;
+  recentCities : string[];
 };
 
 type Weather = {
   name: string;
   temp: number;
+  icon: string;
+  desc: string;
+  feels_like: number;
+  humidity: number;
+  wind: number;
 };
 
 const initialState = {
@@ -17,6 +23,7 @@ const initialState = {
   error: null,
   weather: null,
   city: "",
+  recentCities: [],
 };
 
 type Action = 
@@ -46,6 +53,7 @@ function reducer(state:State, action:Action):State {
         loading: false,
         error: null,
         weather: action.payload,
+        recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city).slice(0, 5)]
       }
     case "SEARCH_FAIL":
       return {
@@ -85,8 +93,15 @@ function App(){
         payload: {
           name: json.name,
           temp: json.main.temp,
+          icon: json.weather[0].icon,
+          desc: json.weather[0].description,
+          feels_like: json.main.feels_like,
+          humidity: json.main.humidity,
+          wind: json.wind.speed
         }
       });
+      const updated = [state.city, ...state.recentCities.filter((city) => city !== state.city).slice(0, 5)]
+      localStorage.setItem("recentCities", JSON.stringify(updated));
     } catch(error){
       if(error instanceof Error){
         dispatch({
@@ -114,8 +129,16 @@ function App(){
             payload: {
               name: json.name,
               temp: json.main.temp,
+              icon: json.weather[0].icon,
+              desc: json.weather[0].description,
+              feels_like: json.main.feels_like,
+              humidity: json.main.humidity,
+              wind: json.wind.speed
             }
           });
+
+          const updated = [state.city, ...state.recentCities.filter((city) => city !== state.city).slice(0, 5)]
+          localStorage.setItem("recentCities", JSON.stringify(updated));
         } catch(error){
           if(error instanceof Error){
             dispatch({
@@ -139,15 +162,23 @@ function App(){
       value={state.city} 
       placeholder="도시이름을 입력해주세요." 
       onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value})}
+      onKeyDown={(e) => {if(e.key === "Enter") getWeather()}}
     />
     <button onClick={getWeather} disabled={state.loading}>Search</button>
     <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
     {state.loading && <div>Loading...</div>}
     {state.error && <div>{state.error}</div>}
-    {state.weather&& <div>
+    {state.weather && (
+      <div>
+        <img src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`}/>
         <h3>도시이름 : {state.weather.name}</h3>
-        <h3>온도 : {Math.ceil(state.weather.temp)}°C</h3>
+        <p>{state.weather.desc}</p>
+        <p>{Math.ceil(state.weather.temp)}°C</p>
+        <p>체감온도 : {Math.ceil(state.weather.feels_like)}°C</p>
+        <p>습도 : {state.weather.humidity}%</p>
+        <p>풍속 : {state.weather.wind}m/s</p>
       </div>
+      )
     }
     </>
   );
