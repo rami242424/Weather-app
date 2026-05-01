@@ -38,6 +38,7 @@ function reducer(state:State, action:Action):State {
       return { ...state, city: action.payload }
     case "SEARCH_START": {
       const newCity = action.payload || state.city;
+      if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null };
       return {
         ...state,
         loading: true,
@@ -141,11 +142,11 @@ function App(){
       />
       <button onClick={() => getWeather()} disabled={state.loading}>Search</button>
       <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
-      {state.recentCities.filter(city => city.toLowerCase() !== state.weather?.name.toLowerCase()).length > 0 && (
+      {state.recentCities.filter(city => city !== "").length > 0 && (
         <div>
           <p>최근 검색</p>
           {state.recentCities
-            .filter(city => city.toLowerCase() !== state.weather?.name.toLowerCase())
+            .filter(city => city !== "" && city.toLowerCase() !== state.weather?.name.toLowerCase())
             .map((city) => (
               <button key={city} onClick={() => getWeather(city)}>{city}</button>
             ))}
