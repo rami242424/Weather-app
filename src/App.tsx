@@ -107,6 +107,7 @@ function App(){
         value={state.city} 
         placeholder="도시이름을 입력해주세요." 
         onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value})}
+        onKeyDown={(e) => {if(e.key === "Enter") getWeather()}}
       />
       <button onClick={getWeather} disabled={state.loading}>Search</button>
       <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
