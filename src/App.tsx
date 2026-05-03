@@ -10,6 +10,11 @@ type State = {
 type Weather = {
   name: string;
   temp: number;
+  icon: string;
+  description:string;
+  humidity: string,
+  feels_like: string,
+  wind: string
 };
 
 const initialState = {
@@ -63,6 +68,11 @@ function App(){
         payload: {
           name: json.name,
           temp: json.main.temp,
+          icon: json.weather[0].icon,
+          description: json.weather[0].description,
+          humidity: json.main.humidity,
+          feels_like: json.main.feels_like,
+          wind: json.wind.speed,
         }
       });
     } catch(error){
@@ -87,8 +97,14 @@ function App(){
             payload: {
               name: json.name,
               temp: json.main.temp,
+              icon: json.weather[0].icon,
+              description: json.weather[0].description,
+              humidity: json.main.humidity,
+              feels_like: json.main.feels_like,
+              wind: json.wind.speed,
             }
           });
+          console.log(json)
         } catch(error){
           if(error instanceof Error){
             dispatch({ type: "SEARCH_FAIL", payload: error.message });
@@ -115,8 +131,16 @@ function App(){
       {state.error && <div>{state.error}</div>}
       {state.weather && (
         <div>
+          <img 
+            src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`}
+            className="w-400"
+          />
           <h3>도시이름 : {state.weather.name}</h3>
           <h3>온도 : {Math.ceil(state.weather.temp)}°C</h3>
+          <p>{state.weather.description}</p>
+          <p>{state.weather.humidity}</p>
+          <p>{state.weather.feels_like}</p>
+          <p>{state.weather.wind}</p>
         </div>
       )}
     </>
