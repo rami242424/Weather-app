@@ -5,6 +5,7 @@ type State = {
   error : string | null;
   weather : Weather | null;
   city : string;
+  recentCities : string[];
 };
 
 type Weather = {
@@ -12,9 +13,9 @@ type Weather = {
   temp: number;
   icon: string;
   description:string;
-  humidity: string,
-  feels_like: string,
-  wind: string
+  humidity: number,
+  feels_like: number,
+  wind: number
 };
 
 const initialState = {
@@ -22,6 +23,7 @@ const initialState = {
   error: null,
   weather: null,
   city: "",
+  recentCities: JSON.parse(localStorage.getItem("recentCities") || "[]")
 };
 
 type Action = 
