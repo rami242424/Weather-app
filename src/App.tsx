@@ -39,7 +39,7 @@ function reducer(state:State, action:Action):State {
     case "SEARCH_START":
       return { ...state, loading: true, error: null, weather: null }
     case "SEARCH_SUCCESS":
-      return { ...state, loading: false, error: null, weather: action.payload }
+      return { ...state, loading: false, error: null, weather: action.payload, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5) }
     case "SEARCH_FAIL":
       return { ...state, loading: false, error: action.payload, weather: null }
     default:
