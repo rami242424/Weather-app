@@ -28,7 +28,7 @@ const initialState = {
 
 type Action = 
   | { type: "INPUT_CHANGE"; payload: string }
-  | { type: "SEARCH_START" }
+  | { type: "SEARCH_START"; payload: string }
   | { type: "SEARCH_SUCCESS"; payload: Weather }
   | { type: "SEARCH_FAIL"; payload: string }
 
@@ -37,7 +37,7 @@ function reducer(state:State, action:Action):State {
     case "INPUT_CHANGE":
       return { ...state, city: action.payload }
     case "SEARCH_START":
-      return { ...state, loading: true, error: null, weather: null }
+      return { ...state, loading: true, error: null, weather: null, city: action.payload }
     case "SEARCH_SUCCESS":
       return { ...state, loading: false, error: null, weather: action.payload, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5) }
     case "SEARCH_FAIL":
@@ -52,11 +52,12 @@ const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const getWeather = async() => {
-    if(!state.city.trim()) return;
-    dispatch({ type: "SEARCH_START" });
+  const getWeather = async(cityName?: string) => {
+    const targetCity = cityName || state.city;
+    if(!targetCity.trim()) return;
+    dispatch({ type: "SEARCH_START" , payload: targetCity});
     try {
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${state.city.trim()}&appid=${API_KEY}&units=metric`);
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`);
       if(!response.ok){
         if(response.status === 404){
           throw new Error("도시 이름을 찾을 수 없습니다.");
@@ -77,6 +78,8 @@ function App(){
           wind: json.wind.speed,
         }
       });
+      const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
+      localStorage.setItem("recentCities", JSON.stringify(updated));
     } catch(error){
       if(error instanceof Error){
         dispatch({ type: "SEARCH_FAIL", payload: error.message });
@@ -85,7 +88,7 @@ function App(){
   }
 
   const getCurrentLocation = () => {
-    dispatch({ type: "SEARCH_START" });
+    dispatch({ type: "SEARCH_START", payload: "" });
     navigator.geolocation.getCurrentPosition(
       async(position) => {
         const lat = position.coords.latitude;
@@ -127,8 +130,16 @@ function App(){
         onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value})}
         onKeyDown={(e) => {if(e.key === "Enter") getWeather()}}
       />
-      <button onClick={getWeather} disabled={state.loading}>Search</button>
+      <button onClick={() => getWeather()} disabled={state.loading}>Search</button>
       <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
+      {state.recentCities.length > 0 && state.recentCities.map((city) => (
+        <button 
+          key={city}
+          onClick={() => getWeather(city)}
+        >
+          {city}
+        </button>
+      ))}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
