@@ -143,18 +143,15 @@ function App(){
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
-        <div>
-          <img 
-            src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`}
-            className="w-400"
-          />
-          <h3>도시이름 : {state.weather.name}</h3>
-          <h3>온도 : {Math.ceil(state.weather.temp)}°C</h3>
-          <p>{state.weather.description}</p>
-          <p>{state.weather.humidity}</p>
-          <p>{state.weather.feels_like}</p>
-          <p>{state.weather.wind}</p>
-        </div>
+      <div>
+        <img src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`} alt={state.weather.description} />
+        <h3>{state.weather.name}</h3>
+        <p>{state.weather.description}</p>
+        <p>{Math.ceil(state.weather.temp)}°C</p>
+        <p>체감온도 : {Math.ceil(state.weather.feels_like)}°C</p>
+        <p>습도 : {state.weather.humidity}%</p>
+        <p>풍속 : {state.weather.wind}m/s</p>
+      </div>
       )}
     </>
   );
