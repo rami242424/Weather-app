@@ -25,6 +25,13 @@ type Forecast = {
   icon: string;
   description: string;
 }
+
+type ForecastItem = {
+  dt_txt: string;
+  main: { temp: number };
+  weather: { icon: string; description: string }[];
+}
+
 const initialState = {
   loading: false,
   error: null,
@@ -65,6 +72,7 @@ function App(){
     const targetCity = cityName || state.city;
     if(!targetCity.trim()) return;
     dispatch({ type: "SEARCH_START" , payload: targetCity});
+    setSelectedDate(null);
     try {
       const [weatherRes, forecastRes] = await Promise.all([
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`),
@@ -91,7 +99,7 @@ function App(){
             feels_like: weatherJson.main.feels_like,
             wind: weatherJson.wind.speed,
           },
-          forecast: forecastJson.list.filter((item:any) => item.dt_txt.includes("12:00:00")).map((item:any) => ({
+          forecast: forecastJson.list.filter((item:ForecastItem) => item.dt_txt.includes("12:00:00")).map((item:ForecastItem) => ({
             date: item.dt_txt.slice(0,10),
             temp: item.main.temp,
             icon: item.weather[0].icon,
@@ -110,6 +118,7 @@ function App(){
 
   const getCurrentLocation = () => {
     dispatch({ type: "SEARCH_START", payload: "" });
+    setSelectedDate(null);
     navigator.geolocation.getCurrentPosition(
       async(position) => {
         const lat = position.coords.latitude;
@@ -134,7 +143,7 @@ function App(){
               feels_like: weatherJson.main.feels_like,
               wind: weatherJson.wind.speed,
             },
-            forecast: forecastJson.list.filter((item:any) => item.dt_txt.includes("12:00:00")).map((item:any) => ({
+            forecast: forecastJson.list.filter((item:ForecastItem) => item.dt_txt.includes("12:00:00")).map((item:ForecastItem) => ({
               date: item.dt_txt.slice(0,10),
               temp: item.main.temp,
               icon: item.weather[0].icon,
@@ -163,23 +172,10 @@ function App(){
       />
       <button onClick={() => getWeather()} disabled={state.loading}>Search</button>
       <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
+
       {state.recentCities.length > 0 && state.recentCities.map((city) => (
-        <button 
-          key={city}
-          onClick={() => getWeather(city)}
-        >
-          {city}
-        </button>
+        <button key={city} onClick={() => getWeather(city)}>{city}</button>
       ))}
-      {state.forecast.length > 0 && (
-        <div>
-          {state.forecast.map((item) => (
-            <button key={item.date} onClick={() => setSelectedDate(item.date)}>
-              {item.date}
-            </button>
-          ))}
-        </div>
-      )}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
@@ -192,6 +188,27 @@ function App(){
         <p>습도 : {state.weather.humidity}%</p>
         <p>풍속 : {state.weather.wind}m/s</p>
       </div>
+      )}
+      {state.forecast.length > 0 && (
+        <div>
+          {state.forecast.map((item) => (
+            <button key={item.date} onClick={() => setSelectedDate(item.date)}>
+              {item.date}
+            </button>
+          ))}
+        </div>
+      )}
+      {selectedDate && (
+        <div>
+          {state.forecast.filter(item => item.date === selectedDate).map(item => (
+            <div key={item.date}>
+              <img src={`https://openweathermap.org/img/wn/${item.icon}@2x.png`} />
+              <p>{item.date}</p>
+              <p>{Math.ceil(item.temp)}°C</p>
+              <p>{item.description}</p>
+            </div>
+          ))}
+        </div>
       )}
     </>
   );
