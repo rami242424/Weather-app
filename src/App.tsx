@@ -78,16 +78,6 @@ function App(){
       }
       const weatherJson = await weatherRes.json();
       const forecastJson = await forecastRes.json();
-      
-      // const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`);
-      // if(!response.ok){
-      //   if(response.status === 404){
-      //     throw new Error("도시 이름을 찾을 수 없습니다.");
-      //   } else {
-      //     throw new Error("서버에 연결 할 수 없습니다.");
-      //   }
-      // }
-      // const json = await response.json();
       dispatch({
         type: "SEARCH_SUCCESS",
         payload: {
@@ -108,7 +98,6 @@ function App(){
           }))
         }
       });
-      //console.log(forecastJson, "forecastJson")
       const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
       localStorage.setItem("recentCities", JSON.stringify(updated));
     } catch(error){
@@ -152,25 +141,6 @@ function App(){
             }))
           }
         });
-          // const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-          // if(!response.ok) throw new Error("위치 기반 날씨 조회 실패");
-          // const json = await response.json();
-          // dispatch({
-          //   type: "SEARCH_SUCCESS",
-          //   payload: {
-          //     weather: {
-          //       name: json.name,
-          //       temp: json.main.temp,
-          //       icon: json.weather[0].icon,
-          //       description: json.weather[0].description,
-          //       humidity: json.main.humidity,
-          //       feels_like: json.main.feels_like,
-          //       wind: json.wind.speed,
-          //     },
-          //     forecast: []
-          //   }
-          // });
-          
         } catch(error){
           if(error instanceof Error){
             dispatch({ type: "SEARCH_FAIL", payload: error.message });
