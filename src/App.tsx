@@ -6,6 +6,7 @@ type State = {
   weather : Weather | null;
   city : string;
   recentCities : string[];
+  forecast: Forecast[];
 };
 
 type Weather = {
@@ -18,18 +19,25 @@ type Weather = {
   wind: number
 };
 
+type Forecast = {
+  date: string;
+  temp: number;
+  icon: string;
+  description: string;
+}
 const initialState = {
   loading: false,
   error: null,
   weather: null,
   city: "",
-  recentCities: JSON.parse(localStorage.getItem("recentCities") || "[]")
+  recentCities: JSON.parse(localStorage.getItem("recentCities") || "[]"),
+  forecast: [],
 };
 
 type Action = 
   | { type: "INPUT_CHANGE"; payload: string }
   | { type: "SEARCH_START"; payload: string }
-  | { type: "SEARCH_SUCCESS"; payload: Weather }
+  | { type: "SEARCH_SUCCESS"; payload: {weather: Weather; forecast: Forecast[]}}
   | { type: "SEARCH_FAIL"; payload: string }
 
 function reducer(state:State, action:Action):State {
@@ -39,7 +47,7 @@ function reducer(state:State, action:Action):State {
     case "SEARCH_START":
       return { ...state, loading: true, error: null, weather: null, city: action.payload }
     case "SEARCH_SUCCESS":
-      return { ...state, loading: false, error: null, weather: action.payload, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5) }
+      return { ...state, loading: false, error: null, weather: action.payload.weather, forecast:action.payload.forecast, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5) }
     case "SEARCH_FAIL":
       return { ...state, loading: false, error: action.payload, weather: null }
     default:
@@ -69,13 +77,16 @@ function App(){
       dispatch({
         type: "SEARCH_SUCCESS",
         payload: {
-          name: json.name,
-          temp: json.main.temp,
-          icon: json.weather[0].icon,
-          description: json.weather[0].description,
-          humidity: json.main.humidity,
-          feels_like: json.main.feels_like,
-          wind: json.wind.speed,
+          weather: {
+            name: json.name,
+            temp: json.main.temp,
+            icon: json.weather[0].icon,
+            description: json.weather[0].description,
+            humidity: json.main.humidity,
+            feels_like: json.main.feels_like,
+            wind: json.wind.speed,
+          },
+          forecast: []
         }
       });
       const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
@@ -100,16 +111,19 @@ function App(){
           dispatch({
             type: "SEARCH_SUCCESS",
             payload: {
-              name: json.name,
-              temp: json.main.temp,
-              icon: json.weather[0].icon,
-              description: json.weather[0].description,
-              humidity: json.main.humidity,
-              feels_like: json.main.feels_like,
-              wind: json.wind.speed,
+              weather: {
+                name: json.name,
+                temp: json.main.temp,
+                icon: json.weather[0].icon,
+                description: json.weather[0].description,
+                humidity: json.main.humidity,
+                feels_like: json.main.feels_like,
+                wind: json.wind.speed,
+              },
+              forecast: []
             }
           });
-          console.log(json)
+          
         } catch(error){
           if(error instanceof Error){
             dispatch({ type: "SEARCH_FAIL", payload: error.message });
