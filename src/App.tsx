@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 
 type State = {
   loading: boolean;
@@ -59,6 +59,7 @@ const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
 
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [selectedDate, setSelectedDate] = useState<string|null>(null);
 
   const getWeather = async(cityName?: string) => {
     const targetCity = cityName || state.city;
@@ -152,7 +153,6 @@ function App(){
       }
     );
   }
-
   return (
     <>
       <input 
@@ -171,6 +171,15 @@ function App(){
           {city}
         </button>
       ))}
+      {state.forecast.length > 0 && (
+        <div>
+          {state.forecast.map((item) => (
+            <button key={item.date} onClick={() => setSelectedDate(item.date)}>
+              {item.date}
+            </button>
+          ))}
+        </div>
+      )}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && (
