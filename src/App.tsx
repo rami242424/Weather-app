@@ -65,30 +65,50 @@ function App(){
     if(!targetCity.trim()) return;
     dispatch({ type: "SEARCH_START" , payload: targetCity});
     try {
-      const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`);
-      if(!response.ok){
-        if(response.status === 404){
+      const [weatherRes, forecastRes] = await Promise.all([
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`),
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`)
+      ]);
+      if(!weatherRes.ok){
+        if(weatherRes.status === 404){
           throw new Error("도시 이름을 찾을 수 없습니다.");
         } else {
           throw new Error("서버에 연결 할 수 없습니다.");
         }
       }
-      const json = await response.json();
+      const weatherJson = await weatherRes.json();
+      const forecastJson = await forecastRes.json();
+      
+      // const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`);
+      // if(!response.ok){
+      //   if(response.status === 404){
+      //     throw new Error("도시 이름을 찾을 수 없습니다.");
+      //   } else {
+      //     throw new Error("서버에 연결 할 수 없습니다.");
+      //   }
+      // }
+      // const json = await response.json();
       dispatch({
         type: "SEARCH_SUCCESS",
         payload: {
           weather: {
-            name: json.name,
-            temp: json.main.temp,
-            icon: json.weather[0].icon,
-            description: json.weather[0].description,
-            humidity: json.main.humidity,
-            feels_like: json.main.feels_like,
-            wind: json.wind.speed,
+            name: weatherJson.name,
+            temp: weatherJson.main.temp,
+            icon: weatherJson.weather[0].icon,
+            description: weatherJson.weather[0].description,
+            humidity: weatherJson.main.humidity,
+            feels_like: weatherJson.main.feels_like,
+            wind: weatherJson.wind.speed,
           },
-          forecast: []
+          forecast: forecastJson.list.filter((item:any) => item.dt_txt.includes("12:00:00")).map((item:any) => ({
+            date: item.dt_txt.slice(0,10),
+            temp: item.main.temp,
+            icon: item.weather[0].icon,
+            description: item.weather[0].description,
+          }))
         }
       });
+      //console.log(forecastJson, "forecastJson")
       const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
       localStorage.setItem("recentCities", JSON.stringify(updated));
     } catch(error){
@@ -105,24 +125,51 @@ function App(){
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         try {
-          const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
-          if(!response.ok) throw new Error("위치 기반 날씨 조회 실패");
-          const json = await response.json();
+          const [weatherRes, forecastRes] = await Promise.all([
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`),
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`)
+          ]);
+          if(!weatherRes.ok) throw new Error("위치 기반 날씨 조회 실패");
+          const weatherJson = await weatherRes.json();
+          const forecastJson = await forecastRes.json();
           dispatch({
-            type: "SEARCH_SUCCESS",
-            payload: {
-              weather: {
-                name: json.name,
-                temp: json.main.temp,
-                icon: json.weather[0].icon,
-                description: json.weather[0].description,
-                humidity: json.main.humidity,
-                feels_like: json.main.feels_like,
-                wind: json.wind.speed,
-              },
-              forecast: []
-            }
-          });
+          type: "SEARCH_SUCCESS",
+          payload: {
+            weather: {
+              name: weatherJson.name,
+              temp: weatherJson.main.temp,
+              icon: weatherJson.weather[0].icon,
+              description: weatherJson.weather[0].description,
+              humidity: weatherJson.main.humidity,
+              feels_like: weatherJson.main.feels_like,
+              wind: weatherJson.wind.speed,
+            },
+            forecast: forecastJson.list.filter((item:any) => item.dt_txt.includes("12:00:00")).map((item:any) => ({
+              date: item.dt_txt.slice(0,10),
+              temp: item.main.temp,
+              icon: item.weather[0].icon,
+              description: item.weather[0].description,
+            }))
+          }
+        });
+          // const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`);
+          // if(!response.ok) throw new Error("위치 기반 날씨 조회 실패");
+          // const json = await response.json();
+          // dispatch({
+          //   type: "SEARCH_SUCCESS",
+          //   payload: {
+          //     weather: {
+          //       name: json.name,
+          //       temp: json.main.temp,
+          //       icon: json.weather[0].icon,
+          //       description: json.weather[0].description,
+          //       humidity: json.main.humidity,
+          //       feels_like: json.main.feels_like,
+          //       wind: json.wind.speed,
+          //     },
+          //     forecast: []
+          //   }
+          // });
           
         } catch(error){
           if(error instanceof Error){
