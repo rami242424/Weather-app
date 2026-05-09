@@ -24,13 +24,13 @@ type Forecast = {
   temp: number;
   icon: string;
   description: string;
-}
+};
 
 type ForecastItem = {
   dt_txt: string;
   main: { temp: number };
   weather: { icon: string; description: string }[];
-}
+};
 
 const initialState = {
   loading: false,
@@ -173,8 +173,8 @@ function App(){
       <button onClick={() => getWeather()} disabled={state.loading}>Search</button>
       <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
 
-      {state.recentCities.length > 0 && state.recentCities.map((city) => (
-        <button key={city} onClick={() => getWeather(city)}>{city}</button>
+      {state.recentCities.length > 0 && state.recentCities.map((cityName) => (
+        <button key={cityName} onClick={() => getWeather(cityName)}>{cityName}</button>
       ))}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
