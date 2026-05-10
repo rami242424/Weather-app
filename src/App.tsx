@@ -197,7 +197,7 @@ function App(){
             </button>
           ))}
         </div>
-      )}
+      )} 
       {selectedDate && (
         <div>
           {state.forecast.filter(item => item.date === selectedDate).map(item => (
