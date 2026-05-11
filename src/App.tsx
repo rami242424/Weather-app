@@ -29,7 +29,7 @@ function reducer(state:State, action:Action):State {
   }
 }
 
-const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 function App(){
   const [state, dispatch] = useReducer(reducer, initialState);
