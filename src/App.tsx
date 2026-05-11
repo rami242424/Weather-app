@@ -1,6 +1,7 @@
 import { useReducer, useState } from "react";
 import SearchBar from "./components/SearchBar";
 import type { Action, ForecastItem, State } from "./types";
+import RecentCities from "./components/RecentCities";
 
 const initialState = {
   loading: false,
@@ -130,13 +131,13 @@ function App(){
     <>
       <SearchBar 
         city={state.city}
-        onInputChange={(value:string) => dispatch({ type: "INPUT_CHANGE", payload: value})}
+        onInputChange={(value:string) => dispatch({ type: "INPUT_CHANGE", payload: value })}
         onSearch={getWeather} 
         loading={state.loading} 
         onCurrentLocation={getCurrentLocation}
       />
       {state.recentCities.length > 0 && state.recentCities.map((cityName) => (
-        <button key={cityName} onClick={() => getWeather(cityName)}>{cityName}</button>
+        <RecentCities key={cityName} cityName={cityName} onSearch={getWeather} />
       ))}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
