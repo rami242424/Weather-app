@@ -1,36 +1,6 @@
 import { useReducer, useState } from "react";
-
-type State = {
-  loading: boolean;
-  error : string | null;
-  weather : Weather | null;
-  city : string;
-  recentCities : string[];
-  forecast: Forecast[];
-};
-
-type Weather = {
-  name: string;
-  temp: number;
-  icon: string;
-  description:string;
-  humidity: number,
-  feels_like: number,
-  wind: number
-};
-
-type Forecast = {
-  date: string;
-  temp: number;
-  icon: string;
-  description: string;
-};
-
-type ForecastItem = {
-  dt_txt: string;
-  main: { temp: number };
-  weather: { icon: string; description: string }[];
-};
+import SearchBar from "./components/SearchBar";
+import type { Action, ForecastItem, State } from "./types";
 
 const initialState = {
   loading: false,
@@ -40,12 +10,6 @@ const initialState = {
   recentCities: JSON.parse(localStorage.getItem("recentCities") || "[]"),
   forecast: [],
 };
-
-type Action = 
-  | { type: "INPUT_CHANGE"; payload: string }
-  | { type: "SEARCH_START"; payload: string }
-  | { type: "SEARCH_SUCCESS"; payload: {weather: Weather; forecast: Forecast[]}}
-  | { type: "SEARCH_FAIL"; payload: string }
 
 function reducer(state:State, action:Action):State {
   switch(action.type){
@@ -164,15 +128,13 @@ function App(){
   }
   return (
     <>
-      <input 
-        value={state.city} 
-        placeholder="도시이름을 입력해주세요." 
-        onChange={(e:React.ChangeEvent<HTMLInputElement>) => dispatch({ type: "INPUT_CHANGE", payload: e.target.value})}
-        onKeyDown={(e) => {if(e.key === "Enter") getWeather()}}
+      <SearchBar 
+        city={state.city}
+        onInputChange={(value:string) => dispatch({ type: "INPUT_CHANGE", payload: value})}
+        onSearch={getWeather} 
+        loading={state.loading} 
+        onCurrentLocation={getCurrentLocation}
       />
-      <button onClick={() => getWeather()} disabled={state.loading}>Search</button>
-      <button onClick={getCurrentLocation} disabled={state.loading}>My Current Location</button>
-
       {state.recentCities.length > 0 && state.recentCities.map((cityName) => (
         <button key={cityName} onClick={() => getWeather(cityName)}>{cityName}</button>
       ))}
