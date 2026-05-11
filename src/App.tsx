@@ -3,6 +3,7 @@ import SearchBar from "./components/SearchBar";
 import type { Action, ForecastItem, State } from "./types";
 import RecentCities from "./components/RecentCities";
 import WeatherCard from "./components/WeatherCard";
+import ForecastSection from "./components/ForecastSection";
 
 const initialState = {
   loading: false,
@@ -143,27 +144,7 @@ function App(){
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && <WeatherCard {...state.weather}/>}
-      {state.forecast.length > 0 && (
-        <div>
-          {state.forecast.map((item) => (
-            <button key={item.date} onClick={() => setSelectedDate(item.date)}>
-              {item.date}
-            </button>
-          ))}
-        </div>
-      )} 
-      {selectedDate && (
-        <div>
-          {state.forecast.filter(item => item.date === selectedDate).map(item => (
-            <div key={item.date}>
-              <img src={`https://openweathermap.org/img/wn/${item.icon}@2x.png`} />
-              <p>{item.date}</p>
-              <p>{Math.ceil(item.temp)}°C</p>
-              <p>{item.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      <ForecastSection forecast={state.forecast} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
     </>
   );
 }
