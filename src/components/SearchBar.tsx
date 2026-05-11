@@ -1,7 +1,7 @@
 interface ISearchBarProps {
     city: string;
     loading: boolean;
-    onSearch: () => void;
+    onSearch: (cityName?:string) => void;
     onCurrentLocation: () => void;
     onInputChange: (value:string) => void;
 }
