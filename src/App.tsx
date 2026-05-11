@@ -2,6 +2,7 @@ import { useReducer, useState } from "react";
 import SearchBar from "./components/SearchBar";
 import type { Action, ForecastItem, State } from "./types";
 import RecentCities from "./components/RecentCities";
+import WeatherCard from "./components/WeatherCard";
 
 const initialState = {
   loading: false,
@@ -141,17 +142,7 @@ function App(){
       ))}
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
-      {state.weather && (
-      <div>
-        <img src={`https://openweathermap.org/img/wn/${state.weather.icon}@2x.png`} alt={state.weather.description} />
-        <h3>{state.weather.name}</h3>
-        <p>{state.weather.description}</p>
-        <p>{Math.ceil(state.weather.temp)}°C</p>
-        <p>체감온도 : {Math.ceil(state.weather.feels_like)}°C</p>
-        <p>습도 : {state.weather.humidity}%</p>
-        <p>풍속 : {state.weather.wind}m/s</p>
-      </div>
-      )}
+      {state.weather && <WeatherCard {...state.weather}/>}
       {state.forecast.length > 0 && (
         <div>
           {state.forecast.map((item) => (
