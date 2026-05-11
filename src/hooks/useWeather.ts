@@ -29,6 +29,7 @@ export function reducer(state:State, action:Action):State {
 export function useWeather() {
     const [state, dispatch] = useReducer(reducer, initialState);
     const [selectedDate, setSelectedDate] = useState<string|null>(null);
+    const handleInputChange = (value:string) => dispatch({ type: "INPUT_CHANGE", payload: value })
 
     const getWeather = async(cityName?: string) => {
         const targetCity = cityName || state.city;
@@ -125,5 +126,5 @@ export function useWeather() {
         );
     }
 
-    return { getWeather, getCurrentLocation, state, dispatch,  selectedDate, setSelectedDate }
+    return { getWeather, getCurrentLocation, state, dispatch,  selectedDate, setSelectedDate, handleInputChange }
 }

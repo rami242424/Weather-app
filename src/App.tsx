@@ -7,12 +7,12 @@ import { useWeather } from "./hooks/useWeather";
 
 
 function App(){
-  const {getWeather, getCurrentLocation, state, selectedDate, setSelectedDate } = useWeather();
+  const {getWeather, getCurrentLocation, state, selectedDate, setSelectedDate, handleInputChange } = useWeather();
   return (
     <>
       <SearchBar 
         city={state.city}
-        onInputChange={(value:string) => dispatch({ type: "INPUT_CHANGE", payload: value })}
+        onInputChange={handleInputChange}
         onSearch={getWeather} 
         loading={state.loading} 
         onCurrentLocation={getCurrentLocation}
