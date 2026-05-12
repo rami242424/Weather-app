@@ -17,9 +17,11 @@ function App(){
         loading={state.loading} 
         onCurrentLocation={getCurrentLocation}
       />
-      {state.recentCities.length > 0 && state.recentCities.map((cityName) => (
-        <RecentCities key={cityName} cityName={cityName} onSearch={getWeather} />
-      ))}
+      <div className={styles.recentCities}>
+        {state.recentCities.length > 0 && state.recentCities.map((cityName) => (
+          <RecentCities key={cityName} cityName={cityName} onSearch={getWeather} />
+        ))}
+      </div>
       {state.loading && <div>Loading...</div>}
       {state.error && <div>{state.error}</div>}
       {state.weather && <WeatherCard {...state.weather}/>}
