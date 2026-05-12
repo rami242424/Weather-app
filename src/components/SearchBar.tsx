@@ -20,7 +20,7 @@ function SearchBar({city, onSearch, loading, onCurrentLocation, onInputChange}:I
                     />
                 <button onClick={() => onSearch()} disabled={loading}>Search</button>
             </div>
-            <button onClick={onCurrentLocation} disabled={loading}>My Current Location</button>
+            <button className={styles.locationBtn} onClick={onCurrentLocation} disabled={loading}>My Current Location</button>
         </div>
     );
 }
