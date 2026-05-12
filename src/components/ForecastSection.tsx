@@ -11,7 +11,7 @@ function ForecastSection({forecast, selectedDate, setSelectedDate}:IForecastSect
     return(
         <div className={styles.container}>
             {forecast.length > 0 && (
-                <div>
+                <div className={styles.dateList}>
                     {forecast.map((item) => (
                         <button 
                             className={item.date === selectedDate ? styles.activeDateBtn : styles.dateBtn}
