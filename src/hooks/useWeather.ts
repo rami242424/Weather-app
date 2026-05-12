@@ -20,10 +20,12 @@ export function reducer(state:State, action:Action):State {
             if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null }
             return { ...state, loading: true, error: null, weather: null, city: action.payload }}
         case "SEARCH_SUCCESS":
-        return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)}
+        return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast, recentCities: state.city 
+        ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)
+        : state.recentCities  }
 
         case "SEARCH_FAIL":
-        return { ...state, loading: false, error: action.payload, weather: null,  recentCities: state.recentCities.filter((city) => city !== state.city) }
+        return { ...state, loading: false, error: action.payload, weather: null }
         default:
         return state;
     }
