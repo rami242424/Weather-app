@@ -18,11 +18,12 @@ export function reducer(state:State, action:Action):State {
         case "SEARCH_START":{
             const newCity = action.payload;
             if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null }
-            return { ...state, loading: true, error: null, weather: null, city: action.payload,  recentCities: [newCity, ...state.recentCities.filter((city) => city !== newCity)].slice(0,5) }}
+            return { ...state, loading: true, error: null, weather: null, city: action.payload }}
         case "SEARCH_SUCCESS":
-        return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast }
+        return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast, recentCities: [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)}
+
         case "SEARCH_FAIL":
-        return { ...state, loading: false, error: action.payload, weather: null }
+        return { ...state, loading: false, error: action.payload, weather: null,  recentCities: state.recentCities.filter((city) => city !== state.city) }
         default:
         return state;
     }

@@ -4,9 +4,31 @@
     padding: 40px 20px;
 }
 
+.title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #4A90E2;
+    margin-bottom: 24px;
+}
+
 .recentCities {
     padding-top: 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+.loading {
+    text-align: center;
+    color: #4A90E2;
+    padding: 20px;
+    font-size: 16px;
+}
+
+.error {
+    text-align: center;
+    color: #e74c3c;
+    padding: 20px;
+    font-size: 16px;
 }

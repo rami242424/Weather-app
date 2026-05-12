@@ -10,6 +10,7 @@ function App(){
   const {getWeather, getCurrentLocation, state, selectedDate, setSelectedDate, handleInputChange } = useWeather();
   return (
     <div className={styles.wrapper}>
+      <h1 className={styles.title}>🌤 Weather App</h1>
       <SearchBar 
         city={state.city}
         onInputChange={handleInputChange}
@@ -22,8 +23,8 @@ function App(){
           <RecentCities key={cityName} cityName={cityName} onSearch={getWeather} />
         ))}
       </div>
-      {state.loading && <div>Loading...</div>}
-      {state.error && <div>{state.error}</div>}
+      {state.loading && <div className={styles.loading}>Loading...</div>}
+      {state.error && <div className={styles.error}>{state.error}</div>}
       {state.weather && <WeatherCard {...state.weather}/>}
       <ForecastSection forecast={state.forecast} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
     </div>
