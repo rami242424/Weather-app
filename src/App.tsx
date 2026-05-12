@@ -3,13 +3,13 @@ import RecentCities from "./components/RecentCities";
 import WeatherCard from "./components/WeatherCard";
 import ForecastSection from "./components/ForecastSection";
 import { useWeather } from "./hooks/useWeather";
-
+import styles from "./App.module.css";
 
 
 function App(){
   const {getWeather, getCurrentLocation, state, selectedDate, setSelectedDate, handleInputChange } = useWeather();
   return (
-    <>
+    <div className={styles.wrapper}>
       <SearchBar 
         city={state.city}
         onInputChange={handleInputChange}
@@ -24,7 +24,7 @@ function App(){
       {state.error && <div>{state.error}</div>}
       {state.weather && <WeatherCard {...state.weather}/>}
       <ForecastSection forecast={state.forecast} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-    </>
+    </div>
   );
 }
 
