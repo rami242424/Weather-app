@@ -1,3 +1,5 @@
+import styles from "./RecentCities.module.css";
+
 interface IRecentCitiesProps {
     cityName: string;
     onSearch: (value:string) => void
@@ -5,7 +7,7 @@ interface IRecentCitiesProps {
 function RecentCities({cityName, onSearch}:IRecentCitiesProps){
     return(
         <>
-            <button onClick={() => onSearch(cityName)}>{cityName}</button>
+            <button className={styles.button} onClick={() => onSearch(cityName)}>{cityName}</button>
         </>
     );
 }
