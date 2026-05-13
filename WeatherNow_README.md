@@ -12,6 +12,14 @@
 
 ---
 
+## 📸 화면 구성
+
+|                       홈                        |                  날씨 검색 결과                   |                    5일 예보 상세                    |
+| :---------------------------------------------: | :-----------------------------------------------: | :-------------------------------------------------: |
+| <img src="./screenshots/home.png" width="260"/> | <img src="./screenshots/search.png" width="260"/> | <img src="./screenshots/forecast.png" width="260"/> |
+
+---
+
 ## 📌 주요 기능
 
 - 도시 이름으로 현재 날씨 검색 (엔터 / 버튼 모두 지원)
@@ -78,10 +86,9 @@ type Action =
 
 ### 커스텀 훅으로 로직과 UI 분리
 
-API 호출, 상태 관리, localStorage 처리 등의 로직을 `useWeather` 커스텀 훅으로 분리했습니다. `App.tsx`는 렌더링에만 집중하고, 훅은 로직을 캡슐화해 `dispatch`를 외부에 노출하지 않고 핸들러 함수 형태로만 제공합니다.
+API 호출, 상태 관리, localStorage 처리 등의 로직을 `useWeather` 커스텀 훅으로 분리했습니다. `App.tsx`는 렌더링에만 집중하고, `dispatch`를 외부에 노출하지 않고 핸들러 함수 형태로만 제공합니다.
 
 ```ts
-// dispatch 노출 대신 핸들러 함수로 캡슐화
 const handleInputChange = (value: string) =>
   dispatch({ type: "INPUT_CHANGE", payload: value });
 
@@ -99,7 +106,7 @@ return {
 
 ### Promise.all로 API 병렬 호출
 
-현재 날씨와 5일 예보 API를 순차 호출하면 대기 시간이 두 배가 됩니다. `Promise.all`로 두 API를 동시에 호출해 로딩 시간을 단축했습니다.
+현재 날씨와 5일 예보 API를 `Promise.all`로 동시에 호출해 로딩 시간을 단축했습니다.
 
 ```ts
 const [weatherRes, forecastRes] = await Promise.all([
@@ -112,7 +119,7 @@ const [weatherRes, forecastRes] = await Promise.all([
 
 ### 5일 예보 데이터 가공
 
-OpenWeatherMap forecast API는 3시간 간격으로 40개 데이터를 반환합니다. `dt_txt`에서 `"12:00:00"`을 포함하는 데이터만 필터링해 하루 대표값(낮 12시 기준) 5개만 추출했습니다.
+OpenWeatherMap forecast API는 3시간 간격으로 40개 데이터를 반환합니다. `dt_txt`에서 `"12:00:00"`을 포함하는 데이터만 필터링해 낮 12시 기준 대표값 5개만 추출했습니다.
 
 ```ts
 forecastJson.list
