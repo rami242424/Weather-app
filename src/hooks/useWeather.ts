@@ -1,7 +1,26 @@
 import { useReducer, useState } from "react";
-import type { Action, ForecastItem, State } from "../types";
+import type { Action, ForecastItem, PlacePrediction, State } from "../types";
+
+declare const google: { maps: { places: { AutocompleteService: new () => { getPlacePredictions: (request: { input: string; types: string[] }, callback: (predictions: PlacePrediction[] | null) => void) => void } } } };
 
 const API_KEY = import.meta.env.VITE_API_KEY;
+//const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
+
+const translateCity = (city:string):Promise<string> => {
+    return new Promise((resolve) => {
+        const service = new google.maps.places.AutocompleteService();
+        service.getPlacePredictions(
+            { input: city, types: ["(cities"] },
+            (predictions: PlacePrediction[] | null) => {
+                if(predictions && predictions.length > 0){
+                    resolve(predictions[0].terms[0].value);
+                } else {
+                    resolve(city);
+                }
+            }
+        )
+    })
+}
 
 export const initialState = {
     loading: false,
@@ -41,7 +60,10 @@ export function useWeather() {
     const getWeather = async(cityName?: string) => {
         const targetCity = cityName || state.city;
         if(!targetCity.trim()) return;
-        dispatch({ type: "SEARCH_START" , payload: targetCity});
+
+        const englishCity = await translateCity(targetCity);
+
+        dispatch({ type: "SEARCH_START" , payload: englishCity});
         setSelectedDate(null);
         try {
         const [weatherRes, forecastRes] = await Promise.all([
