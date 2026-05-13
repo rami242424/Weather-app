@@ -67,8 +67,8 @@ export function useWeather() {
         setSelectedDate(null);
         try {
         const [weatherRes, forecastRes] = await Promise.all([
-            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`),
-            fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${targetCity.trim()}&appid=${API_KEY}&units=metric`)
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${englishCity.trim()}&appid=${API_KEY}&units=metric`),
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${englishCity.trim()}&appid=${API_KEY}&units=metric`)
         ]);
         if(!weatherRes.ok){
             if(weatherRes.status === 404){
@@ -99,7 +99,7 @@ export function useWeather() {
             }))
             }
         });
-        const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
+        const updated = [englishCity, ...state.recentCities.filter((city) => city !== englishCity)].slice(0,5);
         localStorage.setItem("recentCities", JSON.stringify(updated));
         
         } catch(error){
