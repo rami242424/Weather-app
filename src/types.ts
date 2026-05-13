@@ -35,3 +35,8 @@ export type Action =
   | { type: "SEARCH_START"; payload: string }
   | { type: "SEARCH_SUCCESS"; payload: {weather: Weather; forecast: Forecast[]}}
   | { type: "SEARCH_FAIL"; payload: string }
+
+
+export type PlacePrediction = {
+  terms: { value: string }[];
+}
