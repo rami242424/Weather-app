@@ -15,10 +15,12 @@ export function reducer(state:State, action:Action):State {
     switch(action.type){
         case "INPUT_CHANGE":
         return { ...state, city: action.payload }
+
         case "SEARCH_START":{
-            const newCity = action.payload;
-            if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null }
-            return { ...state, loading: true, error: null, weather: null, city: action.payload }}
+        const newCity = action.payload;
+        if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null }
+        return { ...state, loading: true, error: null, weather: null, city: action.payload }}
+
         case "SEARCH_SUCCESS":
         return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast, recentCities: state.city 
         ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)
@@ -77,6 +79,7 @@ export function useWeather() {
         });
         const updated = [targetCity, ...state.recentCities.filter((city) => city !== targetCity)].slice(0,5);
         localStorage.setItem("recentCities", JSON.stringify(updated));
+        
         } catch(error){
         if(error instanceof Error){
             dispatch({ type: "SEARCH_FAIL", payload: error.message });
@@ -126,7 +129,11 @@ export function useWeather() {
             }
         },
         (error) => {
-            dispatch({ type: "SEARCH_FAIL", payload: error.message });
+            if(error.code === 1){
+                dispatch({ type: "SEARCH_FAIL", payload: "위치 권한이 거부되었습니다."});
+            } else {
+                dispatch({ type: "SEARCH_FAIL", payload: "위치를 가져올 수 없습니다."});
+            }
         }
         );
     }
