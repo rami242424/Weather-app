@@ -22,13 +22,14 @@
 
 ## 📌 주요 기능
 
+- 한글 / 영어 도시명 모두 검색 지원 (Google Geocoding API 연동)
 - 도시 이름으로 현재 날씨 검색 (엔터 / 버튼 모두 지원)
 - 현재 위치 기반 날씨 자동 조회 (Geolocation API)
 - 날씨 아이콘, 온도, 체감온도, 습도, 풍속 표시
 - 5일 예보 (낮 12시 기준 대표값) — 날짜 클릭 시 상세 정보 확인
 - 최근 검색 도시 목록 저장 (localStorage, 최대 5개)
 - 검색 성공 시에만 최근 목록에 추가 (실패 시 저장 안 됨)
-- API 실패 / 도시 없음 에러 메시지 처리
+- API 실패 / 도시 없음 / 위치 권한 거부 에러 메시지 처리
 
 ---
 
@@ -41,6 +42,7 @@
 | 스타일 | CSS Modules             |
 | 빌드   | Vite                    |
 | API    | OpenWeatherMap REST API |
+| 번역   | Google Geocoding API    |
 
 ---
 
@@ -66,6 +68,31 @@ src/
 ---
 
 ## 🔧 구현 포인트
+
+### 한글 도시명 검색 지원 (Google Geocoding API)
+
+OpenWeatherMap API는 영어 도시명 기반으로 동작합니다. 한글 검색을 지원하기 위해 Google Geocoding API를 중간 매개체로 활용했습니다. 사용자가 한글로 도시명을 입력하면 `translateCity` 함수가 영어로 변환 후 날씨 API를 호출합니다. 인풋창은 사용자가 입력한 값 그대로 유지됩니다.
+
+```ts
+const translateCity = async (city: string): Promise<string> => {
+  const res = await fetch(
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(city)}&language=en&key=${GOOGLE_API_KEY}`,
+  );
+  const data = await res.json();
+  if (data.results && data.results.length > 0) {
+    const addressComponents = data.results[0].address_components;
+    const cityComponent = addressComponents.find(
+      (c) =>
+        c.types.includes("locality") ||
+        c.types.includes("administrative_area_level_1"),
+    );
+    return cityComponent ? cityComponent.long_name : city;
+  }
+  return city;
+};
+```
+
+---
 
 ### useReducer로 복잡한 상태 관리
 
@@ -157,7 +184,10 @@ npm run dev
 루트에 `.env` 파일 생성 후 아래 내용 추가
 
 ```
-VITE_API_KEY=your_api_key_here
+VITE_API_KEY=your_openweathermap_api_key
+VITE_GOOGLE_API_KEY=your_google_api_key
 ```
 
 > OpenWeatherMap API 키는 [https://openweathermap.org](https://openweathermap.org) 에서 발급받을 수 있습니다.
+
+> Google API 키는 [https://console.cloud.google.com](https://console.cloud.google.com) 에서 발급받을 수 있습니다. (Geocoding API 활성화 필요)
