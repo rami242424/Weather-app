@@ -9,7 +9,6 @@ const translateCity = async (city: string): Promise<string> => {
     `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(city)}&language=en&key=${GOOGLE_API_KEY}`
   );
   const data = await res.json();
-  console.log("Geocoding 응답:", data);
   if (data.results && data.results.length > 0) {
     const addressComponents = data.results[0].address_components;
     const cityComponent = addressComponents.find((c: { types: string[]; long_name: string }) => 
@@ -44,7 +43,7 @@ export function reducer(state:State, action:Action):State {
             ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)
             : state.recentCities }
         case "SEARCH_FAIL":
-            return { ...state, loading: false, error: action.payload, weather: null }
+            return { ...state, loading: false, error: action.payload, weather: null, forecast: [] }
         default:
             return state;
     }
