@@ -187,6 +187,21 @@ case "SEARCH_SUCCESS": {
 API 응답 타입(`WeatherApiResponse`, `ForecastApiResponse`)을 별도로 정의해
 `any` 없이 타입 안전하게 처리했습니다.
 
+```
+const parseWeatherPayload = (weatherJson: WeatherApiResponse, forecastJson: ForecastApiResponse) => {
+  return {
+    weather: {
+      name: weatherJson.name,
+      temp: weatherJson.main.temp,
+      // ...
+    },
+    forecast: forecastJson.list
+      .filter((item: ForecastItem) => item.dt_txt.includes("12:00:00"))
+      .map((item: ForecastItem) => ({ ... })),
+  };
+};
+```
+
 ---
 
 ## 🚀 시작하기
