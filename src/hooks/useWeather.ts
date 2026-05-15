@@ -1,5 +1,5 @@
 import { useReducer, useState } from "react";
-import type { Action, ForecastItem, State } from "../types";
+import type { Action, ForecastApiResponse, ForecastItem, State, WeatherApiResponse } from "../types";
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -20,7 +20,7 @@ const translateCity = async (city: string): Promise<string> => {
   
 };
 
-const parseWeatherPayload = (weatherJson:any, forecastJson:any) => {
+const parseWeatherPayload = (weatherJson:WeatherApiResponse, forecastJson:ForecastApiResponse) => {
     return {
         weather: {
             name: weatherJson.name,

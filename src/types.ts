@@ -36,3 +36,13 @@ export type Action =
   | { type: "SEARCH_SUCCESS"; payload: {weather: Weather; forecast: Forecast[]}}
   | { type: "SEARCH_FAIL"; payload: string }
 
+export type WeatherApiResponse = {
+  name: string;
+  main: { temp: number; humidity: number; feels_like: number };
+  weather: { icon: string; description: string }[];
+  wind: { speed: number };
+};
+
+export type ForecastApiResponse = {
+  list: ForecastItem[];
+};

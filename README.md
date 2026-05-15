@@ -171,6 +171,16 @@ forecastJson.list
 
 ---
 
+### 응답 파싱 로직 분리 (parseWeatherPayload)
+
+`getWeather`(도시명 검색)와 `getCurrentLocation`(위치 기반 검색) 두 함수 모두
+동일한 API 응답 구조를 받아 같은 형태의 payload로 가공해야 합니다.
+이 파싱 로직을 `parseWeatherPayload` 함수로 분리해 중복을 제거하고,
+API 응답 타입(`WeatherApiResponse`, `ForecastApiResponse`)을 별도로 정의해
+`any` 없이 타입 안전하게 처리했습니다.
+
+---
+
 ## 🚀 시작하기
 
 ```bash
