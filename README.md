@@ -187,7 +187,7 @@ case "SEARCH_SUCCESS": {
 API 응답 타입(`WeatherApiResponse`, `ForecastApiResponse`)을 별도로 정의해
 `any` 없이 타입 안전하게 처리했습니다.
 
-```
+```ts
 const parseWeatherPayload = (weatherJson: WeatherApiResponse, forecastJson: ForecastApiResponse) => {
   return {
     weather: {
