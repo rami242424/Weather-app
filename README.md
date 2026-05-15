@@ -163,10 +163,18 @@ forecastJson.list
 
 ### 최근 검색 도시 관리
 
-검색 성공 시에만 최근 목록에 추가하고, 중복 제거 및 최대 5개 제한을 적용했습니다. localStorage와 React 상태를 동기화해 새로고침 후에도 유지됩니다.
+검색 성공 시에만 최근 목록에 추가하고, 중복 제거 및 최대 5개 제한을 적용했습니다.
+localStorage 저장과 React 상태 업데이트를 `SEARCH_SUCCESS` 리듀서 케이스 안에서
+함께 처리해 두 값이 항상 동기화되도록 했습니다.
 
 ```ts
-[newCity, ...state.recentCities.filter((city) => city !== newCity)].slice(0, 5);
+case "SEARCH_SUCCESS": {
+  const newRecentCities = state.city
+    ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0, 5)
+    : state.recentCities;
+  localStorage.setItem("recentCities", JSON.stringify(newRecentCities));
+  return { ...state, recentCities: newRecentCities, ... };
+}
 ```
 
 ---
