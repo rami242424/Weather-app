@@ -20,6 +20,28 @@ const translateCity = async (city: string): Promise<string> => {
   
 };
 
+const parseWeatherPayload = (weatherJson:any, forecastJson:any) => {
+    return {
+        weather: {
+            name: weatherJson.name,
+            temp: weatherJson.main.temp,
+            icon: weatherJson.weather[0].icon,
+            description: weatherJson.weather[0].description,
+            humidity: weatherJson.main.humidity,
+            feels_like: weatherJson.main.feels_like,
+            wind: weatherJson.wind.speed,
+        },
+        forecast: forecastJson.list
+            .filter((item:ForecastItem) => item.dt_txt.includes("12:00:00"))
+            .map((item:ForecastItem) => ({
+                date: item.dt_txt.slice(0,10),
+                temp: item.main.temp,
+                icon: item.weather[0].icon,
+                description: item.weather[0].description,
+            })),
+    }
+}
+
 export const initialState = {
     loading: false,
     error: null,
@@ -38,10 +60,22 @@ export function reducer(state:State, action:Action):State {
         if(!newCity.trim()) return { ...state, loading: true, error: null, weather: null }
         return { ...state, loading: true, error: null, weather: null }
         }
-        case "SEARCH_SUCCESS":
-            return { ...state, loading: false, error: null, weather: action.payload.weather, forecast: action.payload.forecast, recentCities: state.city 
-            ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0,5)
-            : state.recentCities }
+        case "SEARCH_SUCCESS": {
+            const newRecentCities = state.city
+                ? [state.city, ...state.recentCities.filter((city) => city !== state.city)].slice(0, 5)
+                : state.recentCities;
+            
+            localStorage.setItem("recentCities", JSON.stringify(newRecentCities));
+            
+            return {
+                ...state,
+                loading: false,
+                error: null,
+                weather: action.payload.weather,
+                forecast: action.payload.forecast,
+                recentCities: newRecentCities,
+            };
+        }
         case "SEARCH_FAIL":
             return { ...state, loading: false, error: action.payload, weather: null, forecast: [] }
         default:
@@ -78,26 +112,8 @@ export function useWeather() {
             const forecastJson = await forecastRes.json();
             dispatch({
                 type: "SEARCH_SUCCESS",
-                payload: {
-                    weather: {
-                        name: weatherJson.name,
-                        temp: weatherJson.main.temp,
-                        icon: weatherJson.weather[0].icon,
-                        description: weatherJson.weather[0].description,
-                        humidity: weatherJson.main.humidity,
-                        feels_like: weatherJson.main.feels_like,
-                        wind: weatherJson.wind.speed,
-                    },
-                    forecast: forecastJson.list.filter((item:ForecastItem) => item.dt_txt.includes("12:00:00")).map((item:ForecastItem) => ({
-                        date: item.dt_txt.slice(0,10),
-                        temp: item.main.temp,
-                        icon: item.weather[0].icon,
-                        description: item.weather[0].description,
-                    }))
-                }
+                payload: parseWeatherPayload(weatherJson, forecastJson),
             });
-            const updated = [englishCity, ...state.recentCities.filter((city) => city !== englishCity)].slice(0,5);
-            localStorage.setItem("recentCities", JSON.stringify(updated));
         } catch(error){
             if(error instanceof Error){
                 dispatch({ type: "SEARCH_FAIL", payload: error.message });
@@ -122,23 +138,7 @@ export function useWeather() {
                     const forecastJson = await forecastRes.json();
                     dispatch({
                         type: "SEARCH_SUCCESS",
-                        payload: {
-                            weather: {
-                                name: weatherJson.name,
-                                temp: weatherJson.main.temp,
-                                icon: weatherJson.weather[0].icon,
-                                description: weatherJson.weather[0].description,
-                                humidity: weatherJson.main.humidity,
-                                feels_like: weatherJson.main.feels_like,
-                                wind: weatherJson.wind.speed,
-                            },
-                            forecast: forecastJson.list.filter((item:ForecastItem) => item.dt_txt.includes("12:00:00")).map((item:ForecastItem) => ({
-                                date: item.dt_txt.slice(0,10),
-                                temp: item.main.temp,
-                                icon: item.weather[0].icon,
-                                description: item.weather[0].description,
-                            }))
-                        }
+                        payload: parseWeatherPayload(weatherJson, forecastJson),
                     });
                 } catch(error){
                     if(error instanceof Error){
